@@ -9,6 +9,7 @@ import TodoItem from "./components/TodoItem";
 // import Text from './components/Text'
 function App() {
   
+  console.log('start');
   // const [titie, setTitie] = useState('标题测试')
   const [isInputShow, setInputShow] = useState(false);
   const [todoList, setTodoList] = useState([]);

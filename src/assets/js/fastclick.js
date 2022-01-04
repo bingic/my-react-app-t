@@ -1,5 +1,8 @@
-;(function () {
-
+/* eslint-disable no-sparse-arrays */
+/* eslint-disable default-case */
+/* eslint-disable no-redeclare */
+(function () {
+console.log('we');
 	/**
 	 * @preserve FastClick: polyfill to remove click delays on browsers with touch UIs.
 	 *
