@@ -1,11 +1,20 @@
 import React from "react";
 import "./index.scss";
+
 export default function TodoItem(props) {
-  const { data, openCheckModal,openEditModal } = props;
+  const { data, openCheckModal, openEditModal, componentItem, removeItem } =
+    props;
+
   return (
     <li className="todo-item">
       <div className="check-box">
-        <input type="checkbox" checked={data.completed} />
+        <input
+          type="checkbox"
+          checked={data.completed}
+          onChange={() => {
+            componentItem(data.id);
+          }}
+        />
       </div>
       <span
         className="content"
@@ -14,20 +23,30 @@ export default function TodoItem(props) {
         {data.content}
       </span>
       <div className="btn-group">
-        <botton
+        <button
           className="btn btn-primary"
           onClick={() => {
-            console.log('查看 data.id',data.id);
             openCheckModal(data.id);
           }}
         >
           查看
-        </botton>
-        <botton className="btn btn-warning" onClick={(params) => {
-          openEditModal(data.id)
-          
-        }}>编辑</botton>
-        <botton className="btn btn-danger">删除</botton>
+        </button>
+        <button
+          className="btn btn-warning"
+          onClick={(params) => {
+            openEditModal(data.id);
+          }}
+        >
+          编辑
+        </button>
+        <button
+          className="btn btn-danger"
+          onClick={(params) => {
+            removeItem(data.id);
+          }}
+        >
+          删除
+        </button>
       </div>
     </li>
   );

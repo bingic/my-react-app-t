@@ -4,12 +4,10 @@ import AddInput from "./components/AddInput";
 import MyHeader from "./components/Header";
 import CheckModal from "./components/Modal/CheckModal";
 import EditModal from "./components/Modal/EditModal";
-import TodoItem from "./components/TodoItem";
+import TodoItem from "./components/TodoItem/index";
 
 // import Text from './components/Text'
 function App() {
-  
-  console.log('start');
   // const [titie, setTitie] = useState('标题测试')
   const [isInputShow, setInputShow] = useState(false);
   const [todoList, setTodoList] = useState([]);
@@ -27,7 +25,6 @@ function App() {
     // 把数据todoList 用parse方法存入 localStorage
     const todoData = JSON.parse(localStorage.getItem("todoData") || "[]");
     setTodoList(todoData);
-    return () => {};
   }, []);
 
   // 从localStorage 用json方法解析 获得data
@@ -53,9 +50,23 @@ function App() {
     setInputShow(false);
   }, []);
 
+  const removeItem = useCallback((id) => {
+    setTodoList((todoList) => todoList.filter((item) => item.id !== id));
+  }, []);
+
+  const componentItem = useCallback((id) => {
+    setTodoList((todoList) =>
+      todoList.map((item) => {
+        if (item.id === id) {
+          item.completed = !item.completed;
+        }
+        return item;
+      })
+    );
+  }, []);
+
   const openCheckModal = useCallback(
     (id) => {
-      console.log("openCheckModal", id);
       _setCurrentData(todoList, id);
       setShowCheckModal(true);
     },
@@ -75,15 +86,14 @@ function App() {
   }
 
   const submitEdit = useCallback((newData, id) => {
-    setTodoList((todoList) => {
-      return todoList.map((item) => {
+    setTodoList((todoList) =>
+      todoList.map((item) => {
         if (item.id === id) {
           item = newData;
         }
-        console.log(item);
         return item;
-      });
-    });
+      })
+    );
     setShowEditModal(false);
   }, []);
 
@@ -104,11 +114,11 @@ function App() {
     <div className="App">
       <CheckModal
         isShowCheckModal={isShowCheckModal}
+        data={currentData}
         // 关闭CheckModal
-        closeModal={(params) => {
+        closeModal={() => {
           setShowCheckModal(false);
         }}
-        data={currentData}
       />
       {/* <Text title={titie} changeTitle={changeTitle}/> */}
 
@@ -118,11 +128,10 @@ function App() {
         submitEdit={submitEdit}
       />
       <MyHeader
-        openInput={(params) => {
-          //  将isInputShow设置为反之
-          setInputShow(!isInputShow);
-        }}
+        //  将isInputShow设置为反之
+        openInput={() => setInputShow(!isInputShow)}
       />
+
       <AddInput isInputShow={isInputShow} addItem={addItem} />
 
       <ul className="todo-list">
@@ -134,6 +143,8 @@ function App() {
                 key={index}
                 openCheckModal={openCheckModal}
                 openEditModal={openEditModal}
+                componentItem={componentItem}
+                removeItem={removeItem}
               />
             </>
           );
