@@ -1,15 +1,19 @@
-import React, { useState, useCallback, useEffect } from "react";
-import "./App.css";
+import React, { useState, useCallback, useEffect, Fragment } from "react";
+
+import "./App.scss";
 import AddInput from "./components/AddInput";
 import MyHeader from "./components/Header";
 import CheckModal from "./components/Modal/CheckModal";
 import EditModal from "./components/Modal/EditModal";
+import Tips from "./components/NoDataTip";
 import TodoItem from "./components/TodoItem/index";
 
 // import Text from './components/Text'
 function App() {
   // const [titie, setTitie] = useState('标题测试')
   const [isInputShow, setInputShow] = useState(false);
+  /* 初始化 待办数据 */
+
   const [todoList, setTodoList] = useState([]);
   const [isShowCheckModal, setShowCheckModal] = useState(false);
   const [currentData, setCurrentData] = useState({});
@@ -22,12 +26,26 @@ function App() {
   // }
 
   useEffect(() => {
-    // 把数据todoList 用parse方法存入 localStorage
+    /* 从缓存获取  */
+    // 从localStorage 用json方法解析 获得data
     const todoData = JSON.parse(localStorage.getItem("todoData") || "[]");
-    setTodoList(todoData);
+    /* 初始化数据 */
+    const initState = [
+      { id: "001", content: "煮咖啡", completed: true },
+      { id: "002", content: "烧水", completed: false },
+      { id: "003", content: "面包🍞", completed: true },
+      { id: "004", content: "content", completed: false },
+      { id: "005", content: "todoList", completed: true },
+    ];
+
+    if (todoData.length === 0) {
+      setTodoList(initState);
+    } else {
+      setTodoList(todoData);
+    }
   }, []);
 
-  // 从localStorage 用json方法解析 获得data
+  // 把数据todoList 用parse方法存入 localStorage
   useEffect(() => {
     localStorage.setItem("todoData", JSON.stringify(todoList));
     return () => {};
@@ -121,7 +139,6 @@ function App() {
         }}
       />
       {/* <Text title={titie} changeTitle={changeTitle}/> */}
-
       <EditModal
         isShowEditModal={isShowEditModal}
         data={currentData}
@@ -131,25 +148,27 @@ function App() {
         //  将isInputShow设置为反之
         openInput={() => setInputShow(!isInputShow)}
       />
-
       <AddInput isInputShow={isInputShow} addItem={addItem} />
-
-      <ul className="todo-list">
-        {todoList.map((item, index) => {
-          return (
-            <>
-              <TodoItem
-                data={item}
-                key={index}
-                openCheckModal={openCheckModal}
-                openEditModal={openEditModal}
-                componentItem={componentItem}
-                removeItem={removeItem}
-              />
-            </>
-          );
-        })}
-      </ul>
+      {!todoList || todoList.length === 0 ? (
+        <Tips />
+      ) : (
+        <ul className="todo-list">
+          {todoList.map((item, index) => {
+            return (
+              <Fragment key={index}>
+                <TodoItem
+                  data={item}
+                  key={index}
+                  openCheckModal={openCheckModal}
+                  openEditModal={openEditModal}
+                  componentItem={componentItem}
+                  removeItem={removeItem}
+                />
+              </Fragment>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }
